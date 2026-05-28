@@ -1,0 +1,26 @@
+# serverless devs 部署配置
+edition: 3.0.0
+name: resume-screener
+
+resources:
+  resume-api:
+    component: fc3
+    props:
+      region: cn-hangzhou
+      functionName: resume-screener
+      runtime: python3.10
+      handler: handler.handler
+      memorySize: 512        # PDF解析需要内存
+      timeout: 30            # AI调用可能较慢
+      environmentVariables:
+        ANTHROPIC_API_KEY: ${env.ANTHROPIC_API_KEY}
+        REDIS_HOST: ${env.REDIS_HOST}
+        REDIS_PASSWORD: ${env.REDIS_PASSWORD}
+      triggers:
+        - triggerType: http
+          triggerConfig:
+            authType: anonymous
+            methods: [GET, POST, OPTIONS]
+      customDomains:
+        - domainName: resume-api.yourdomain.com
+          protocol: HTTP
